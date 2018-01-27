@@ -6,7 +6,7 @@
 /*   By: ftreand <marvin@le-101.fr>                 +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/01/18 14:52:23 by ftreand      #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/27 17:59:57 by ftreand     ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/01/27 19:05:30 by ftreand     ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -96,8 +96,11 @@ void	ft_recup_stat(t_ls *ls, DIR *dir)
 	t_st	stats;
 	t_gr	*group;
 	t_pw	*passwd;
+	int total = 0;
+	int i;
 
-	while ((dirent = readdir(dir)) != NULL)
+	i = 0;
+	while ((dirent = readdir(dir)))
 	{
 		stat(dirent->d_name, &stats);
 		group = getgrgid(stats.st_gid);
@@ -120,11 +123,13 @@ void	ft_recup_stat(t_ls *ls, DIR *dir)
 		ls->name = ft_strdup(dirent->d_name);
 		ft_putstr(dirent->d_name);
 		NL;
-		if (stats.st_blocks)
-			ls->total += stats.st_blocks;
-		ls->tbytes = ls->tbytes + stats.st_size;
+		total += stats.st_blocks;
+		printf("st_blocks[%d] = %lld\n", i, stats.st_blocks);
+		printf("total[%d] = %d\n", i++, total);
+		ls->tbytes += stats.st_size;
 	}
-	printf("total = %d\n", ls->total);
+
+	NL;
 	printf("tbytes = %d\n", ls->tbytes);
 }
 
@@ -190,7 +195,6 @@ int		ft_ls(int ac, char **av, t_flag flag)
 //			ft_putendl(" :");
 //			ft_ls_affich(dir);
 		}
-		closedir(dir);
 		i++;
 	}
 	return (0);
