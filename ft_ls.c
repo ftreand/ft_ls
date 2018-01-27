@@ -6,7 +6,7 @@
 /*   By: ftreand <marvin@le-101.fr>                 +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/01/18 14:52:23 by ftreand      #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/23 22:19:54 by ftreand     ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/01/27 17:59:57 by ftreand     ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -22,7 +22,7 @@ void	ft_ls_error(char er)
 	ft_putendl("usage: ls [-lRart] [file ...]");
 }
 
-void	ft_ls_affich(DIR *dir, t_flag flags)
+/*void	ft_ls_affich(DIR *dir)
 {
 	t_dir *aff;
 	char c;
@@ -33,7 +33,7 @@ void	ft_ls_affich(DIR *dir, t_flag flags)
 		ft_putendl(aff->d_name);
 		ft_putchar(c);
 	}
-}
+}*/
 
 void	ft_sort_arg(int arg, char **av, int nb_arg)
 {
@@ -62,6 +62,7 @@ void	ft_sort_arg(int arg, char **av, int nb_arg)
 		printf("arg apres tri = %s\n", av[k++]);
 }
 
+
 char	*ft_recup_mode(mode_t st_mode)
 {
 	char str[11];
@@ -87,30 +88,44 @@ char	*ft_recup_mode(mode_t st_mode)
 	result = ft_strdup(str);
 	return (result);
 }
-// refaire pour recup uniauement les stats et les stocker dans un maillon de la liste chainee
-//
-void	ft_recup_stat(t_ls *ls, t_gr *group, t_pw *passwd,
-		t_st stats, DIR *dir)
-{
-	char	*mode;
-	int		link;
-	char	*tm;
+// refaire pour recup uniquement les stats et les stocker dans un maillon de la liste chainee
 
-	mode = ft_recup_mode(stats.st_mode);
-	ft_putstr(mode);
-	SP;
-	link = (int)stats.st_nlink;
-	ft_putnbr(link);
-	SP;
-	ft_putstr(passwd->pw_name);
-	SP;
-	ft_putstr(group->gr_name);
-	SP;
-	ft_putnbr((int)stats.st_size);
-	SP;
-	tm = ft_strsub(ctime(&stats.st_mtime), 4, 12);
-	ft_putstr(tm);
-	SP;
+void	ft_recup_stat(t_ls *ls, DIR *dir)
+{
+	t_dir	*dirent;
+	t_st	stats;
+	t_gr	*group;
+	t_pw	*passwd;
+
+	while ((dirent = readdir(dir)) != NULL)
+	{
+		stat(dirent->d_name, &stats);
+		group = getgrgid(stats.st_gid);
+		passwd = getpwuid(stats.st_uid);
+		ls->mode = ft_recup_mode(stats.st_mode);
+		ft_putstr(ls->mode);
+		ls->link = (int)stats.st_nlink;
+		SP;
+		ft_putnbr(ls->link);
+		SP;
+		ft_putstr(passwd->pw_name);
+		SP;
+		ft_putstr(group->gr_name);
+		SP;
+		ft_putnbr((int)stats.st_size);
+		SP;
+		ls->time = ft_strsub(ctime(&stats.st_mtime), 4, 12);
+		ft_putstr(ls->time);
+		SP;
+		ls->name = ft_strdup(dirent->d_name);
+		ft_putstr(dirent->d_name);
+		NL;
+		if (stats.st_blocks)
+			ls->total += stats.st_blocks;
+		ls->tbytes = ls->tbytes + stats.st_size;
+	}
+	printf("total = %d\n", ls->total);
+	printf("tbytes = %d\n", ls->tbytes);
 }
 
 int		ft_ls(int ac, char **av, t_flag flag)
@@ -120,15 +135,16 @@ int		ft_ls(int ac, char **av, t_flag flag)
 	int i;
 	int j;
 	int nb_arg;
-	t_st	stats;
-	t_pw	*passwd;
-	t_gr	*group;
+//	t_st	stats;
+//	t_pw	*passwd;
+//	t_gr	*group;
 	//	struct stat stats;
 	//	struct dirent	dirent;
 	//	if(stat(av[1], &stats) < 0) // recuperer les infos 
 	//		return (1);
 	//	printf("%d\n", (int)stats.st_size);
 	//	return (0);
+	(void)ac;
 	i = 0;
 	j = 0;
 	nb_arg = 0;
@@ -148,19 +164,20 @@ int		ft_ls(int ac, char **av, t_flag flag)
 	printf("nb_arg = %d\n", nb_arg);
 	if (nb_arg > 1)
 		ft_sort_arg(flag.i, av, nb_arg);
-	if (ac == 1)
+	if (nb_arg == 0)
 	{
 		dir = opendir(".");
-		ft_ls_affich(dir,flag);
+		ft_recup_stat(ls, dir);
+//		ft_ls_affich(dir);
 		return (0);
 	}
 	while (i < nb_arg)
 	{
+		printf("flag.i = %d\n", flag.i);
+		printf("i = %d\n", i);
 		dir = opendir(av[flag.i + i]);
-		//			if (stat(av[flag.i + i], &stats) < 0)
-		//				return (1);
-		//			group = getgrgid(stats.st_gid);
-		//			passwd = getpwuid(stats.st_uid);
+//		group = getgrgid(stats.st_gid);
+//		passwd = getpwuid(stats.st_uid);
 		if (!dir)
 		{
 			ft_putstr("ls :");
@@ -168,15 +185,29 @@ int		ft_ls(int ac, char **av, t_flag flag)
 		}
 		if (dir)
 		{
-			ft_recup_stat(ls, group, passwd, stats, dir);
+			ft_recup_stat(ls, dir);
 //			ft_putstr(av[flag.i + i]);
 //			ft_putendl(" :");
-			ft_ls_affich(dir, flag);
-			closedir(dir);
+//			ft_ls_affich(dir);
 		}
+		closedir(dir);
 		i++;
 	}
 	return (0);
+}
+
+char	*ft_recup_flag(t_flag flag)
+{
+	char *recup_flag;
+
+	recup_flag = malloc(sizeof(char*));
+	recup_flag = flag.l == 1 ? ft_strjoin(recup_flag, "l") : recup_flag;
+	recup_flag = flag.ur == 1 ? ft_strjoin(recup_flag, "R") : recup_flag;
+	recup_flag = flag.a == 1 ? ft_strjoin(recup_flag, "a") : recup_flag;
+	recup_flag = flag.r == 1 ? ft_strjoin(recup_flag, "r") : recup_flag;
+	recup_flag = flag.t == 1 ? ft_strjoin(recup_flag, "t") : recup_flag;
+	printf("all flags = %s\n", recup_flag);
+	return (recup_flag);
 }
 
 int		main(int ac, char **av)
@@ -211,6 +242,7 @@ int		main(int ac, char **av)
 			flag.i++;
 			//			printf("flag.i = %d\n", flag.i);
 		}
+		flag.flags = ft_recup_flag(flag);
 		ft_ls(ac, av, flag);
 	}
 	return (0);
