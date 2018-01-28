@@ -96,10 +96,10 @@ void	ft_recup_stat(t_ls *ls, DIR *dir)
 	t_st	stats;
 	t_gr	*group;
 	t_pw	*passwd;
-	int total = 0;
 	int i;
 
 	i = 0;
+	ls->total = 0;
 	while ((dirent = readdir(dir)))
 	{
 		stat(dirent->d_name, &stats);
@@ -123,9 +123,9 @@ void	ft_recup_stat(t_ls *ls, DIR *dir)
 		ls->name = ft_strdup(dirent->d_name);
 		ft_putstr(dirent->d_name);
 		NL;
-		total += stats.st_blocks;
+		ls->total += stats.st_blocks;
 		printf("st_blocks[%d] = %lld\n", i, stats.st_blocks);
-		printf("total[%d] = %d\n", i++, total);
+		printf("total[%d] = %d\n", i++, ls->total);
 		ls->tbytes += stats.st_size;
 	}
 
@@ -200,17 +200,21 @@ int		ft_ls(int ac, char **av, t_flag flag)
 	return (0);
 }
 
-char	*ft_recup_flag(t_flag flag)
+int		ft_recup_flag(t_flag flag)
 {
-	char *recup_flag;
+	int recup_flag;
 
-	recup_flag = malloc(sizeof(char*));
-	recup_flag = flag.l == 1 ? ft_strjoin(recup_flag, "l") : recup_flag;
-	recup_flag = flag.ur == 1 ? ft_strjoin(recup_flag, "R") : recup_flag;
-	recup_flag = flag.a == 1 ? ft_strjoin(recup_flag, "a") : recup_flag;
-	recup_flag = flag.r == 1 ? ft_strjoin(recup_flag, "r") : recup_flag;
-	recup_flag = flag.t == 1 ? ft_strjoin(recup_flag, "t") : recup_flag;
-	printf("all flags = %s\n", recup_flag);
+	recup_flag = 0;
+	recup_flag = flag.l == 1 ? recup_flag + low_l : recup_flag;
+	printf("all flags l= %d\n", recup_flag);
+	recup_flag = flag.ur == 1 ? recup_flag + up_r : recup_flag;
+	printf("all flags R = %d\n", recup_flag);
+	recup_flag = flag.a == 1 ? recup_flag + low_a : recup_flag;
+	printf("all flags a = %d\n", recup_flag);
+	recup_flag = flag.r == 1 ? recup_flag + low_r : recup_flag;
+	printf("all flags  r= %d\n", recup_flag);
+	recup_flag = flag.t == 1 ? recup_flag + low_t : recup_flag;
+	printf("all flags = %d\n", recup_flag);
 	return (recup_flag);
 }
 

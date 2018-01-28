@@ -25,6 +25,12 @@
 # include <string.h>
 # define SP ft_putchar(' ')
 # define NL ft_putchar('\n')
+/*int flags pour la recup*/
+# define low_l 1
+# define up_r 2
+# define low_a 4
+# define low_r 8
+# define low_t 16
 
 typedef struct dirent	t_dir;
 typedef struct stat		t_st;
@@ -56,7 +62,7 @@ typedef struct	s_flag
 	int a;
 	int r;
 	int t;
-	char *flags;
+	int flags;
 	char er;
 }				t_flag;
 
