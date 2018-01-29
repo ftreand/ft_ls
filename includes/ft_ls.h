@@ -25,6 +25,7 @@
 # include <string.h>
 # define SP ft_putchar(' ')
 # define NL ft_putchar('\n')
+
 /*int flags pour la recup*/
 # define low_l 1
 # define up_r 2

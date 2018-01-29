@@ -200,7 +200,7 @@ int		ft_ls(int ac, char **av, t_flag flag)
 	return (0);
 }
 
-int		ft_recup_flag(t_flag flag)
+int		ft_recup_int_flag(t_flag flag)
 {
 	int recup_flag;
 
@@ -218,19 +218,28 @@ int		ft_recup_flag(t_flag flag)
 	return (recup_flag);
 }
 
-int		main(int ac, char **av)
+char	ft_error_flag(char **av, t_flag flag)
+{
+	char c;
+
+	c = av[flag.i][flag.j] != 'l' && av[flag.i][flag.j] !=
+		'R' && av[flag.i][flag.j] != 'a' && av[flag.i][flag.j] !=
+		'r' && av[flag.i][flag.j] != 't' ? av[flag.i][flag.j] :
+		flag.er;
+	return (c);
+}
+
+t_flag	ft_recup_char_flag(char **av)
 {
 	t_flag flag;
-
+	
 	flag.i = 1;
 	flag.l = 0;
 	flag.ur = 0;
 	flag.a = 0;
 	flag.r = 0;
 	flag.t = 0;
-	if (ac)
-	{
-		while (av[flag.i] && av[flag.i][0] == '-')
+	while (av[flag.i] && av[flag.i][0] == '-')
 		{
 			flag.j = 1;
 			while (av[flag.i][flag.j])
@@ -241,16 +250,22 @@ int		main(int ac, char **av)
 				flag.a = av[flag.i][flag.j] == 'a' && flag.a == 0 ? 1 : flag.a;
 				flag.r = av[flag.i][flag.j] == 'r' && flag.r == 0 ? 1 : flag.r;
 				flag.t = av[flag.i][flag.j] == 't' && flag.t == 0 ? 1 : flag.t;
-				flag.er = av[flag.i][flag.j] != 'l' && av[flag.i][flag.j] !=
-					'R' && av[flag.i][flag.j] != 'a' && av[flag.i][flag.j] !=
-					'r' && av[flag.i][flag.j] != 't' ? av[flag.i][flag.j] :
-					flag.er;
+				flag.er = ft_error_flag(av, flag);
 				flag.j++;
 			}
 			flag.i++;
-			//			printf("flag.i = %d\n", flag.i);
 		}
-		flag.flags = ft_recup_flag(flag);
+	return (flag);
+}
+
+int		main(int ac, char **av)
+{
+	t_flag flag;
+
+	if (ac)
+	{
+		flag = ft_recup_char_flag(av);
+		flag.flags = ft_recup_int_flag(flag);
 		ft_ls(ac, av, flag);
 	}
 	return (0);
