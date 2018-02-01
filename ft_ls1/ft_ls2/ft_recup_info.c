@@ -6,7 +6,7 @@
 /*   By: ftreand <marvin@le-101.fr>                 +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/01/31 19:04:02 by ftreand      #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/31 20:09:04 by ftreand     ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/02/01 17:03:16 by ftreand     ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -39,11 +39,14 @@ void	ft_sort_av(char ***av, char *(dup)(const char *s))
 		}
 		i++;
 	}
+	OK;
 }
 
 int		ft_recup_info(int ac, char **av, t_ls **ls)
 {
-//	int	i = 0;
+	int	i = 0;
+	t_dir	*dirent;
+	DIR *dir;
 	(void)ac;
 	(void)ls;
 //	while (av[i])
@@ -51,12 +54,22 @@ int		ft_recup_info(int ac, char **av, t_ls **ls)
 //		printf("before sort = %s\n", av[i]);
 //		i++;
 //	}
+	OK;
 	ft_sort_av(&av, ft_strdup);
-//	i = 0;
-//	while (av[i])
-//	{
-//		printf("after sort = %s\n", av[i]);
-//		i++;
-//	}
+	while (av[i++])
+		printf("after sort = %s\n", av[i]);
+
+	while (av[i])
+	{
+	dir = opendir(av[i]);
+	printf("av = %s\n", av[i]);
+	printf("dir = %d\n", (int)dir);
+	OK;
+
+	OK;
+	while ((dirent = readdir(dir)))
+		printf("type du fichier = %u\n", dirent->d_type);
+	}
+	i++;
 	return (0);
 }

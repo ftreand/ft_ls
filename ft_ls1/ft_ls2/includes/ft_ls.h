@@ -6,7 +6,7 @@
 /*   By: ftreand <marvin@le-101.fr>                 +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/01/18 14:41:59 by ftreand      #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/31 19:28:14 by ftreand     ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/02/01 16:59:16 by ftreand     ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -27,6 +27,7 @@
 # define CHECK(x, z) if ((x)) return (z)
 # define SP ft_putchar(' ')
 # define NL ft_putchar('\n')
+# define OK ft_putstr("OK\n")
 
 /*int flags pour la recup*/
 # define low_l 1
@@ -53,8 +54,7 @@ typedef struct	s_ls
 	char	d_name[256];
 	struct s_ls *next;
 	struct s_ls *prev;
-}
-				t_ls;
+}				t_ls;
 
 typedef struct	s_flags
 {
@@ -72,6 +72,6 @@ t_flags	ft_manage_flag(char **av);
 char	ft_er_flag(char **av, int i, int j);
 void	ft_error_flag(char er);
 int		ft_recup_info(int ac, char **av, t_ls **ls);
-
+void	ft_sort_av(char ***av, char *(dup)(const char *s));
 
 #endif

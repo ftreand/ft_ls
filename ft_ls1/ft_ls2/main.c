@@ -6,7 +6,7 @@
 /*   By: ftreand <marvin@le-101.fr>                 +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/01/30 18:44:28 by ftreand      #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/31 19:28:20 by ftreand     ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/02/01 16:28:52 by ftreand     ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -31,32 +31,47 @@ char	ft_er_flag(char **av, int i, int j)
 	return (c);
 }
 
+t_flags	ft_recup_char_flag(char **av, t_flags fg, int i, int j)
+{
+
+	fg.l = av[i][j] == 'l' && fg.l == 0 ? 1 : fg.l;
+	printf("fg l %d\n", fg.l);
+	fg.ur = av[i][j] == 'R' && fg.ur == 0 ? 1 : fg.ur;
+	printf("fg.R %d\n", fg.ur);
+	fg.a = av[i][j] == 'a' && fg.a == 0 ? 1 : fg.a;
+	printf("fg.a %d\n", fg.a);
+	fg.r = av[i][j] == 'r' && fg.r == 0 ? 1 : fg.r;
+	printf("fg.r %d\n", fg.r);
+	fg.t = av[i][j] == 't' && fg.t == 0 ? 1 : fg.t;
+	printf("fg.t %d\n", fg.t);
+	return (fg);
+}
+
 t_flags	ft_manage_flag(char **av)
 {
 	int		i;
 	int		j;
 	t_flags	fg;
-	
-	i = 1;
-	while (av[i] && av[i][0] == '-')
+
+	fg.l = 0;
+	fg.ur = 0;
+	fg.a = 0;
+	fg.r = 0;
+	fg.t = 0;
+	i = 0;
+	while (av[++i] && av[i][0] == '-')
 	{
-		j = 1;
-		while (av[i][j])
+		j = 0;
+		while (av[i][++j])
 		{
-			fg.l = av[i][j] != 'l' && fg.l != 1 ? 0 : 1;
-			fg.ur = av[i][j] != 'R' && fg.ur != 1 ? 0 : 1;
-			fg.a = av[i][j] != 'a' && fg.a != 1 ? 0 : 1;
-			fg.r = av[i][j] != 'r' && fg.r != 1 ? 0 : 1;
-			fg.t = av[i][j] != 't' && fg.t != 1 ? 0 : 1;
+			fg = ft_recup_char_flag(av, fg, i, j);
 			fg.er = ft_er_flag(av, i, j);
 			if (fg.er != '\0')
 			{
 				ft_error_flag(fg.er);
 				break ;
 			}
-			j++;
 		}
-		i++;
 	}
 	return (fg);
 }
@@ -85,6 +100,7 @@ int		main(int ac, char **av)
 	if ((flag = ft_return_flag(av, &flag)) > 31)
 		return (1);
 	printf("full flag = %d\n", flag);
+//	ls = malloc(sizeof(t_ls));
 	CHECK(ft_recup_info(ac, av, &ls) == -1, 1);
 
 	return (0);
